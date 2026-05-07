@@ -764,30 +764,49 @@ document.getElementById('brief-form').addEventListener('submit', async function(
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting\u2026';
 
-  const fd = new FormData(this);
-  const data = {};
-  fd.forEach((v,k) => { data[k] = data[k] ? data[k]+', '+v : v; });
-  data.deliverable_types = deliverables.join(', ');
-  data.design_mood = document.getElementById('design-mood-val').value;
-  data.colour_direction = document.getElementById('colour-direction-val').value;
-  data.imagery_style = document.getElementById('imagery-style-val').value;
   const dims = [...document.querySelectorAll('.dim-size')].map((el,i) => { const f = document.querySelectorAll('.dim-format')[i].value; return el.value+(f?' \u2014 '+f:''); }).filter(Boolean);
-  data.dimensions = dims.join(' | ');
-  data.status = 'new';
+
+  // Build clean object with only valid DB columns
+  const payload = {
+    project_name:      document.querySelector('[name="project_name"]')?.value || '',
+    requested_by:      document.querySelector('[name="requested_by"]')?.value || '',
+    deliverable_types: deliverables.join(', '),
+    design_mood:       document.getElementById('design-mood-val').value,
+    colour_direction:  document.getElementById('colour-direction-val').value,
+    imagery_style:     document.getElementById('imagery-style-val').value,
+    dimensions:        dims.join(' | '),
+    headline:          document.querySelector('[name="headline"]')?.value || '',
+    ads_headline:      document.querySelector('[name="ads_headline"]')?.value || '',
+    ads_copy:          document.querySelector('[name="ads_copy"]')?.value || '',
+    cta_primary:       document.querySelector('[name="cta_primary"]')?.value || '',
+    cta_url:           document.querySelector('[name="cta_url"]')?.value || '',
+    cta_secondary:     document.querySelector('[name="cta_secondary"]')?.value || '',
+    cta_secondary_url: document.querySelector('[name="cta_secondary_url"]')?.value || '',
+    disclaimers:       document.querySelector('[name="disclaimers"]')?.value || '',
+    sample1_url:       document.querySelector('[name="sample1_url"]')?.value || '',
+    sample1_notes:     document.querySelector('[name="sample1_notes"]')?.value || '',
+    sample2_url:       document.querySelector('[name="sample2_url"]')?.value || '',
+    sample2_notes:     document.querySelector('[name="sample2_notes"]')?.value || '',
+    sample3_url:       document.querySelector('[name="sample3_url"]')?.value || '',
+    hard_nos:          document.querySelector('[name="hard_nos"]')?.value || '',
+    additional_notes:  document.querySelector('[name="additional_notes"]')?.value || '',
+    status: 'new'
+  };
 
   try {
-    await fetch(SB_URL+'/rest/v1/design_brief_submissions', {
+    const res = await fetch(SB_URL+'/rest/v1/design_brief_submissions', {
       method:'POST',
       headers:{...SBH,'Prefer':'return=minimal'},
-      body:JSON.stringify(data)
+      body:JSON.stringify(payload)
     });
+    if (!res.ok) { const err = await res.text(); console.warn('Supabase error:', res.status, err); }
   } catch(err) { console.warn('Submit failed:',err); }
 
   document.getElementById('brief-form').style.display = 'none';
   const success = document.getElementById('success-screen');
   success.style.display = 'flex';
   const when = new Date().toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur'});
-  document.getElementById('brief-summary').innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Project</span><strong>'+data.project_name+'</strong></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Requested by</span><span>'+data.requested_by+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Deliverable</span><span>'+data.deliverable_types+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Mood</span><span>'+data.design_mood+'</span></div><div style="border-top:1px solid var(--border);padding-top:10px;font-size:12px;color:var(--text3);">Submitted '+when+'</div></div>';
+  document.getElementById('brief-summary').innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Project</span><strong>'+payload.project_name+'</strong></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Requested by</span><span>'+payload.requested_by+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Deliverable</span><span>'+payload.deliverable_types+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Mood</span><span>'+payload.design_mood+'</span></div><div style="border-top:1px solid var(--border);padding-top:10px;font-size:12px;color:var(--text3);">Submitted '+when+'</div></div>';
   success.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
