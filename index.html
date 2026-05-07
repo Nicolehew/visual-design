@@ -427,20 +427,6 @@
             Add another size
           </button>
         </div>
-        <hr class="divider">
-        <div class="field">
-          <label>Logo File <span class="req">★</span></label>
-          <span class="hint" style="margin-bottom:8px;">Upload your logo file. SVG, AI, PNG or PDF accepted.</span>
-          <div class="file-upload-area" id="logo-upload-area">
-            <input type="file" id="logo-file-input" accept=".svg,.ai,.png,.pdf,.eps,.zip" onchange="handleLogoUpload(this)">
-            <div class="upload-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div class="upload-label" id="upload-label">Click to upload logo</div>
-            <div class="upload-sub" id="upload-sub">SVG, AI, PNG, EPS, PDF — up to 20MB</div>
-            <div class="file-name" id="file-name-display"></div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -637,31 +623,17 @@ function removeDim(btn) {
   if (rows.length > 1) { btn.closest('.dim-row').remove(); updateProgress(); }
 }
 
-// ── Logo upload ──
-let logoFile = null;
-function handleLogoUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  logoFile = file;
-  document.getElementById('logo-upload-area').classList.add('has-file');
-  document.getElementById('upload-label').textContent = 'Logo uploaded';
-  document.getElementById('upload-sub').textContent = '';
-  document.getElementById('file-name-display').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
-  updateProgress();
-}
-
 // ── Progress ──
 const REQ_FIELDS = ['project_name','requested_by','hard_nos','sample1_url','sample2_url'];
 const REQ_HIDDEN = ['design-mood-val','colour-direction-val','imagery-style-val'];
 function updateProgress() {
   let filled = 0;
-  const total = REQ_FIELDS.length + REQ_HIDDEN.length + 3;
+  const total = REQ_FIELDS.length + REQ_HIDDEN.length + 2; // deliverable + dimension
   REQ_FIELDS.forEach(n => { const el = document.querySelector('[name="'+n+'"]'); if (el && el.value.trim()) filled++; });
   REQ_HIDDEN.forEach(id => { if (document.getElementById(id).value) filled++; });
   if (document.querySelectorAll('[name="deliverable"]:checked').length > 0) filled++;
   const ds = document.querySelector('.dim-size');
   if (ds && ds.value.trim()) filled++;
-  if (logoFile) filled++;
   const pct = Math.round((filled/total)*100);
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('progress-label').textContent = pct + '% complete';
@@ -669,7 +641,7 @@ function updateProgress() {
 document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', updateProgress));
 
 // ── Google Sheets endpoint — paste your Apps Script URL here ──
-const SHEET_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // ← paste your Apps Script URL here after setup
 
 // ── Submit ──
 const LABELS = {project_name:'Project Name',requested_by:'Requested by',hard_nos:'Hard Nos',sample1_url:'Sample 1 URL',sample2_url:'Sample 2 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style'};
@@ -684,7 +656,6 @@ document.getElementById('brief-form').addEventListener('submit', async function(
   if (deliverables.length === 0) missing.push('Deliverable Type');
   const ds = document.querySelector('.dim-size');
   if (!ds || !ds.value.trim()) missing.push('Dimensions');
-  if (!logoFile) missing.push('Logo File');
   if (missing.length > 0) {
     errEl.textContent = '⚠ Please complete: ' + missing.join(', ');
     errEl.style.display = 'block';
@@ -704,7 +675,6 @@ document.getElementById('brief-form').addEventListener('submit', async function(
   data.imagery_style = document.getElementById('imagery-style-val').value;
   const dims = [...document.querySelectorAll('.dim-size')].map((el,i) => { const f = document.querySelectorAll('.dim-format')[i].value; return el.value + (f?' — '+f:''); }).filter(Boolean);
   data.dimensions = dims.join(' | ');
-  data.logo_filename = logoFile ? logoFile.name : '';
   data.submitted_at = new Date().toLocaleString('en-MY', {timeZone:'Asia/Kuala_Lumpur'});
 
   // Send to Google Sheets
@@ -741,11 +711,6 @@ function resetForm() {
   document.querySelectorAll('.radio-item').forEach(i => i.classList.remove('selected'));
   ['design-mood-val','colour-direction-val','imagery-style-val'].forEach(id => { document.getElementById(id).value=''; });
   document.getElementById('error-msg').style.display = 'none';
-  logoFile = null;
-  document.getElementById('logo-upload-area').classList.remove('has-file');
-  document.getElementById('upload-label').textContent = 'Click to upload logo';
-  document.getElementById('upload-sub').textContent = 'SVG, AI, PNG, EPS, PDF — up to 20MB';
-  document.getElementById('file-name-display').textContent = '';
   document.getElementById('dim-list').innerHTML = '<div class="dim-row"><input type="text" placeholder="e.g. 1080 × 1080 px (IG Square)" class="dim-size"><input type="text" placeholder="File format e.g. PNG + PSD" class="dim-format"><button type="button" class="dim-remove" onclick="removeDim(this)">×</button></div>';
   updateProgress();
   window.scrollTo({top:0,behavior:'smooth'});
