@@ -668,9 +668,12 @@ function updateProgress() {
 }
 document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', updateProgress));
 
+// ── Google Sheets endpoint — paste your Apps Script URL here ──
+const SHEET_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
 // ── Submit ──
 const LABELS = {project_name:'Project Name',requested_by:'Requested by',hard_nos:'Hard Nos',sample1_url:'Sample 1 URL',sample2_url:'Sample 2 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style'};
-document.getElementById('brief-form').addEventListener('submit', function(e) {
+document.getElementById('brief-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const errEl = document.getElementById('error-msg');
   errEl.style.display = 'none';
@@ -690,6 +693,8 @@ document.getElementById('brief-form').addEventListener('submit', function(e) {
   }
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting…';
+
+  // Build data object
   const fd = new FormData(this);
   const data = {};
   fd.forEach((v,k) => { data[k] = data[k] ? data[k]+', '+v : v; });
@@ -699,10 +704,28 @@ document.getElementById('brief-form').addEventListener('submit', function(e) {
   data.imagery_style = document.getElementById('imagery-style-val').value;
   const dims = [...document.querySelectorAll('.dim-size')].map((el,i) => { const f = document.querySelectorAll('.dim-format')[i].value; return el.value + (f?' — '+f:''); }).filter(Boolean);
   data.dimensions = dims.join(' | ');
+  data.logo_filename = logoFile ? logoFile.name : '';
+  data.submitted_at = new Date().toLocaleString('en-MY', {timeZone:'Asia/Kuala_Lumpur'});
+
+  // Send to Google Sheets
+  if (SHEET_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+    } catch(err) {
+      console.warn('Sheet submission failed:', err);
+    }
+  }
+
+  // Show success
   document.getElementById('brief-form').style.display = 'none';
   const success = document.getElementById('success-screen');
   success.style.display = 'flex';
-  document.getElementById('brief-summary').innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Project</span><strong>'+data.project_name+'</strong></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Requested by</span><span>'+data.requested_by+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Deliverable</span><span>'+data.deliverable_types+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Dimensions</span><span>'+data.dimensions+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Mood</span><span>'+data.design_mood+'</span></div><div style="border-top:1px solid var(--border);padding-top:10px;font-size:12px;color:var(--text3);">Copy &amp; Content will be completed by Nicole Hew.</div></div>';
+  document.getElementById('brief-summary').innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Project</span><strong>'+data.project_name+'</strong></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Requested by</span><span>'+data.requested_by+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Deliverable</span><span>'+data.deliverable_types+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Dimensions</span><span>'+data.dimensions+'</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--text2);">Mood</span><span>'+data.design_mood+'</span></div><div style="border-top:1px solid var(--border);padding-top:10px;font-size:12px;color:var(--text3);">Submitted '+data.submitted_at+'</div></div>';
   success.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
