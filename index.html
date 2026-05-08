@@ -198,40 +198,49 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 @keyframes bellring{0%,100%{transform:rotate(0);}15%{transform:rotate(15deg);}30%{transform:rotate(-12deg);}45%{transform:rotate(8deg);}60%{transform:rotate(-5deg);}75%{transform:rotate(3deg);}}
 .bell-ring svg{animation:bellring .6s ease;}
 
-.status-board-wrap{max-width:1400px;margin:0 auto;padding:24px 40px 80px;}
-.kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
-.kanban-col{background:var(--surface2);border-radius:var(--radius-lg);overflow:hidden;}
-.kanban-col-header{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;}
-.kanban-col-title{font-size:12.5px;font-weight:600;}
-.kanban-col-count{font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:20px;}
-.kanban-cards{padding:0 9px 9px;display:flex;flex-direction:column;gap:8px;min-height:50px;}
-.kanban-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;transition:all .15s;}
-.kanban-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.05);}
-.kanban-card.urgent-card{border-color:var(--urgent);border-left:3px solid var(--urgent);}
-.kc-project{font-size:12.5px;font-weight:500;color:var(--text);margin-bottom:2px;line-height:1.35;}
-.kc-meta{font-size:11px;color:var(--text3);margin-bottom:6px;}
-.kc-tag{font-size:10.5px;color:var(--text2);background:var(--surface2);border-radius:5px;padding:2px 6px;display:inline-block;margin-bottom:6px;}
-.kc-progress{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
-.kc-progress-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
-.kc-progress-fill{height:100%;border-radius:2px;transition:width .3s;}
-.kc-progress-pct{font-size:10.5px;color:var(--text3);}
-.kc-status-row{display:flex;gap:4px;flex-wrap:wrap;}
-.kc-status-btn{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:20px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.kc-status-btn:hover{opacity:.75;}
-.kanban-empty{text-align:center;padding:18px 8px;font-size:12px;color:var(--text3);font-style:italic;}
-
-.col-new .kanban-col-header{background:#EEF4FB;}
-.col-new .kanban-col-title{color:#185FA5;}
-.col-new .kanban-col-count{background:#B5D4F4;color:#0C447C;}
-.col-in_progress .kanban-col-header{background:#FDF4E7;}
-.col-in_progress .kanban-col-title{color:#BA7517;}
-.col-in_progress .kanban-col-count{background:#FAC775;color:#633806;}
-.col-review .kanban-col-header{background:#FAECE7;}
-.col-review .kanban-col-title{color:#993C1D;}
-.col-review .kanban-col-count{background:#F5C4B3;color:#712B13;}
-.col-urgent .kanban-col-header{background:var(--urgent-bg);}
-.col-urgent .kanban-col-title{color:var(--urgent);}
-.col-urgent .kanban-col-count{background:#F5ABAB;color:#7A1515;}
+.sb-wrap{max-width:1360px;margin:0 auto;padding:24px 32px 80px;}
+.sb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.sb-header h2{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.4px;}
+.sb-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start;}
+.sb-col{display:flex;flex-direction:column;gap:10px;}
+.sb-col-label{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.sb-col-name{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;}
+.sb-col-count{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.sb-card{background:var(--surface);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.sb-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.11);}
+.sb-card.urgent-card{border-left:3px solid var(--urgent);}
+.sb-card-accent{position:absolute;top:0;left:0;right:0;height:4px;}
+.sb-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin:8px 0;}
+.sb-card-name{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.35;}
+.sb-card-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.sb-card-meta{font-size:11.5px;color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.sb-card-avatar{width:22px;height:22px;border-radius:50%;background:#AFA9EC;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#3C3489;flex-shrink:0;}
+.sb-card-tag{display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;margin-bottom:9px;}
+.sb-progress-wrap{margin-bottom:12px;}
+.sb-progress-bar{height:5px;background:rgba(0,0,0,.07);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+.sb-progress-fill{height:100%;border-radius:3px;transition:width .4s;}
+.sb-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);}
+.sb-card-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.sb-btn{font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.sb-btn:hover{opacity:.85;}
+.sb-btn-complete{background:#E1F5EE;color:#0F6E56;}
+.sb-btn-move{background:var(--surface2);color:var(--text2);}
+.sb-btn-trash{background:var(--surface2);color:var(--text3);padding:5px 9px;}
+.sb-empty{text-align:center;padding:28px 12px;font-size:12.5px;color:var(--text3);font-style:italic;background:var(--surface2);border-radius:12px;}
+.sb-new .sb-col-name{color:#7F77DD;}.sb-new .sb-col-count{background:#EEEDFE;color:#3C3489;}
+.sb-new .sb-card-accent{background:#7F77DD;}.sb-new .sb-card-dot{background:#7F77DD;}
+.sb-new .sb-card-tag{background:#EEEDFE;color:#3C3489;}.sb-new .sb-progress-fill{background:#7F77DD;}
+.sb-inp .sb-col-name{color:#D85A30;}.sb-inp .sb-col-count{background:#FAECE7;color:#712B13;}
+.sb-inp .sb-card-accent{background:#D85A30;}.sb-inp .sb-card-dot{background:#D85A30;}
+.sb-inp .sb-card-tag{background:#FAECE7;color:#712B13;}.sb-inp .sb-progress-fill{background:#D85A30;}
+.sb-rev .sb-col-name{color:#185FA5;}.sb-rev .sb-col-count{background:#E6F1FB;color:#0C447C;}
+.sb-rev .sb-card-accent{background:#378ADD;}.sb-rev .sb-card-dot{background:#378ADD;}
+.sb-rev .sb-card-tag{background:#E6F1FB;color:#0C447C;}.sb-rev .sb-progress-fill{background:#378ADD;}
+.sb-urg .sb-col-name{color:#C0392B;}.sb-urg .sb-col-count{background:#FDECEA;color:#7A1515;}
+.sb-urg .sb-card-accent{background:#E24B4A;}.sb-urg .sb-card-dot{background:#E24B4A;}
+.sb-urg .sb-card-tag{background:#FDECEA;color:#7A1515;}.sb-urg .sb-progress-fill{background:#E24B4A;}
+@media(max-width:1000px){.sb-cols{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.sb-cols{grid-template-columns:1fr;}.sb-wrap{padding:16px 16px 60px;}}
 
 /* MONTHLY TABS */
 .month-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
@@ -543,12 +552,14 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
 <!-- ===== STATUS BOARD TAB ===== -->
 <div class="tab-pane" id="tab-status">
-  <div class="status-board-wrap">
-    <div class="page-header"><h2>Status Board</h2><button class="refresh-btn" onclick="loadStatusBoard()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Refresh</button></div>
-    <div class="kanban-board" id="kanban-board"><div class="loading-state"><span class="spinner"></span>Loading…</div></div>
+  <div class="sb-wrap">
+    <div class="sb-header">
+      <h2>Status Board</h2>
+      <button class="refresh-btn" onclick="loadStatusBoard()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Refresh</button>
+    </div>
+    <div class="sb-cols" id="kanban-board"><div class="loading-state"><span class="spinner"></span>Loading...</div></div>
   </div>
 </div>
-
 <!-- ===== MONTHLY TAB ===== -->
 <div class="tab-pane" id="tab-monthly">
   <div class="responses-wrap">
@@ -1088,55 +1099,89 @@ async function loadStatusBoard() {
 
 function renderStatusBoard(rows) {
   const board = document.getElementById('kanban-board');
-  const mainCols = ['new','in_progress','review'];
-  const isUrgentFn = r => r.urgency==='🔥 Urgent'||r.urgency==='urgent';
-  const urgentRows = rows.filter(r=>isUrgentFn(r));
-  const colLabels = {new:'New',in_progress:'In Progress',review:'In Review'};
-
-  const makeCard = r => {
+  const isUrgF = r => r.urgency==='Urgent'||r.urgency==='urgent';
+  const urgRows = rows.filter(r=>isUrgF(r));
+  const cols = [
+    {key:'new',cls:'sb-new',label:'New'},
+    {key:'in_progress',cls:'sb-inp',label:'In Progress'},
+    {key:'review',cls:'sb-rev',label:'In Review'},
+    {key:'urgent_x',cls:'sb-urg',label:'Urgent',isUrgent:true}
+  ];
+  const ini = name => (name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const mkCard = r => {
     const checks = r.checklist||{};
-    const doneCount = CHECK_ITEMS.filter(ci=>checks[ci.key]).length;
-    const pct = Math.round(doneCount/CHECK_ITEMS.length*100);
+    const done = CHECK_ITEMS.filter(ci=>checks[ci.key]).length;
+    const pct = Math.round(done/CHECK_ITEMS.length*100);
     const when = r.submitted_at ? new Date(r.submitted_at).toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',day:'numeric'}) : '';
-    const st = getSt(r.status||'new');
-    const targets = mainCols.filter(s=>s!==(r.status||'new')).map(s=>'<button class="kc-status-btn" style="background:'+getSt(s).bg+';color:'+getSt(s).color+'" data-id="'+r.id+'" data-status="'+s+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">'+getSt(s).label+'</button>');
-    targets.push('<button class="kc-status-btn" style="background:#E1F5EE;color:#0F6E56" data-id="'+r.id+'" data-status="archived" onclick="moveCard(this.dataset.id,this.dataset.status,event)">\u2713 Archive</button>');
-    targets.push('<button class="kc-status-btn" style="background:#F0EEEB;color:#888" data-id="'+r.id+'" onclick="trashCard(this.dataset.id,event)">\uD83D\uDDD1 Trash</button>');
-    return '<div class="kanban-card'+(isUrgentFn(r)?' urgent-card':'')+'">'
-      +'<div class="kc-project">'+(r.project_name||'Untitled')+'</div>'
-      +'<div class="kc-meta">'+when+' \u00b7 '+(r.requested_by||'?')+'</div>'
-      +(r.deliverable_types?'<div class="kc-tag">'+r.deliverable_types.split(',')[0].trim()+'</div>':'')
-      +'<div class="kc-progress"><div class="kc-progress-bar"><div class="kc-progress-fill" style="width:'+pct+'%;background:'+st.color+'"></div></div><span class="kc-progress-pct">'+pct+'%</span></div>'
-      +'<div class="kc-status-row">'+targets.join('')+'</div></div>';
+    const mvBtns = ['new','in_progress','review'].filter(s=>s!==(r.status||'new')).map(s=>{
+      const sl=getSt(s); return '<button class="sb-btn sb-btn-move" data-id="'+r.id+'" data-status="'+s+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">'+sl.label+'</button>';
+    }).join('');
+    return '<div class="sb-card'+(isUrgF(r)?' urgent-card':'')+'">'
+      +'<div class="sb-card-accent"></div>'
+      +'<div class="sb-card-top"><div class="sb-card-name">'+(r.project_name||'Untitled')+'</div><div class="sb-card-dot"></div></div>'
+      +'<div class="sb-card-meta"><div class="sb-card-avatar">'+ini(r.requested_by)+'</div>'+(r.requested_by||'?')+' &middot; '+when+'</div>'
+      +(r.deliverable_types?'<div class="sb-card-tag">'+r.deliverable_types.split(',')[0].trim()+'</div>':'')
+      +'<div class="sb-progress-wrap"><div class="sb-progress-bar"><div class="sb-progress-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="sb-progress-label"><span>Checklist</span><span>'+pct+'%</span></div></div>'
+      +'<div class="sb-card-actions">'
+      +'<button class="sb-btn sb-btn-complete" data-id="'+r.id+'" onclick="completeCard(this.dataset.id,event)">Complete</button>'
+      +mvBtns
+      +'<button class="sb-btn sb-btn-trash" data-id="'+r.id+'" onclick="trashCard(this.dataset.id,event)">Trash</button>'
+      +'</div></div>';
   };
-
-  // 4 columns: New, In Progress, In Review, Urgent
-  const colsHtml = mainCols.map(col => {
-    const cards = rows.filter(r=>(r.status||'new')===col && !isUrgentFn(r));
-    const st = getSt(col);
-    return '<div class="kanban-col col-'+col+'">'
-      +'<div class="kanban-col-header"><div class="kanban-col-title">'+colLabels[col]+'</div><span class="kanban-col-count" style="background:'+st.bg+';color:'+st.color+'">'+cards.length+'</span></div>'
-      +'<div class="kanban-cards">'+(cards.length===0?'<div class="kanban-empty">Empty</div>':cards.map(makeCard).join(''))+'</div></div>';
+  board.innerHTML = cols.map(col=>{
+    const cards = col.isUrgent ? urgRows : rows.filter(r=>(r.status||'new')===col.key && !isUrgF(r));
+    return '<div class="sb-col '+col.cls+'"><div class="sb-col-label"><span class="sb-col-name">'+col.label+'</span><span class="sb-col-count">'+cards.length+'</span></div>'
+      +(cards.length===0?'<div class="sb-empty">Nothing here</div>':cards.map(r=>mkCard(r)).join(''))+'</div>';
   }).join('');
-
-  const urgentHtml = '<div class="kanban-col col-urgent">'
-    +'<div class="kanban-col-header"><div class="kanban-col-title" style="color:var(--urgent);">\uD83D\uDD25 Urgent</div><span class="kanban-col-count" style="background:#F5ABAB;color:#7A1515;">'+urgentRows.length+'</span></div>'
-    +'<div class="kanban-cards">'+(urgentRows.length===0?'<div class="kanban-empty">No urgent briefs</div>':urgentRows.map(makeCard).join(''))+'</div></div>';
-
-  board.innerHTML = colsHtml + urgentHtml;
 }
 
 async function moveCard(id, newStatus, event) {
   event.stopPropagation();
   try {
     await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
-      method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'}, body:JSON.stringify({status:newStatus, completed_at: newStatus==='archived'?new Date().toISOString():null})
+      method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'},
+      body:JSON.stringify({status:newStatus, completed_at: newStatus==='archived'?new Date().toISOString():null})
     });
-    const st = getSt(newStatus);
-    showNotif('\uD83D\uDCE2 Moved to: '+st.label);
+    showNotif('Moved to: '+getSt(newStatus).label);
     loadStatusBoard();
-    if (newStatus==='archived') { loadArchive(); }
+    if (newStatus==='archived') loadArchive();
   } catch(err) { console.warn('Move failed:',err); }
+}
+
+async function completeCard(id, event) {
+  event.stopPropagation();
+  const btn = event.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.confirming === 'true') {
+    btn.dataset.confirming = '';
+    btn.textContent = 'Completing...';
+    try {
+      await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
+        method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'},
+        body:JSON.stringify({status:'archived', completed_at: new Date().toISOString()})
+      });
+      showNotif('Project complete! Moved to Archive.');
+      const card = btn.closest('.sb-card');
+      if (card) { card.style.transition='opacity .35s,transform .35s'; card.style.opacity='0'; card.style.transform='scale(.92)'; setTimeout(()=>card.remove(),380); }
+      const ac = document.getElementById('count-archive');
+      if (ac) ac.textContent = (parseInt(ac.textContent||'0')+1).toString();
+      setTimeout(loadArchive, 400);
+    } catch(err) { console.warn('err:',err); btn.textContent='Complete'; }
+  } else {
+    btn.dataset.confirming = 'true';
+    btn.textContent = 'Confirm?';
+    btn.style.background = '#0F6E56';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      if (btn.dataset.confirming === 'true') {
+        btn.dataset.confirming = '';
+        btn.textContent = 'Complete';
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    }, 3000);
+  }
 }
 
 async function trashCard(id, event) {
