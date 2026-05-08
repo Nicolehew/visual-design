@@ -545,6 +545,20 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
             </div>
             <div class="field-row">
               <div class="field">
+                <label>Company <span class="req">★</span></label>
+                <div class="radio-grid" id="company-field" style="grid-template-columns:1fr 1fr;">
+                  <label class="radio-item"><div class="rdot"></div>CBM</label>
+                  <label class="radio-item"><div class="rdot"></div>Sunway Money</label>
+                </div>
+                <input type="hidden" name="company" id="company-val">
+              </div>
+              <div class="field">
+                <label>Month / Year <span class="req">★</span></label>
+                <input type="text" name="month_year_input" id="month-year-input" placeholder="e.g. Jun 2025" readonly style="background:var(--surface2);cursor:default;">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
                 <label>Product Type <span class="req">★</span></label>
                 <div class="radio-grid" id="product-type" style="grid-template-columns:1fr 1fr;">
                   <label class="radio-item"><div class="rdot"></div>Personal</label>
@@ -972,10 +986,16 @@ function initRadio(groupId, hiddenId) {
 }
 // Pre-select Normal urgency
 document.getElementById('urgency-val').value = 'normal';
+// Auto-fill current month/year
+const _now = new Date();
+const _my = _now.toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',year:'numeric'});
+const _myEl = document.getElementById('month-year-input');
+if (_myEl) _myEl.value = _my;
 initRadio('design-mood','design-mood-val');
 initRadio('colour-direction','colour-direction-val');
 initRadio('imagery-style','imagery-style-val');
 initRadio('product-type','product-type-val');
+initRadio('company-field','company-val');
 initRadio('ads-deliverable','ads-deliverable-val');
 initRadio('urgency-field','urgency-val');
 
@@ -1045,7 +1065,7 @@ function removeDim(btn) {
 
 // PROGRESS
 const REQ_FIELDS = ['project_name','requested_by','target_audience','objective','sample1_url'];
-const REQ_HIDDEN = ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','ads-deliverable-val'];
+const REQ_HIDDEN = ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','ads-deliverable-val','company-val'];
 function updateProgress() {
   let filled = 0, total = REQ_FIELDS.length + REQ_HIDDEN.length + 2;
   REQ_FIELDS.forEach(n => { const el = document.querySelector('[name="'+n+'"]'); if (el && el.value.trim()) filled++; });
@@ -1090,7 +1110,7 @@ function switchTab(tab, btn) {
 }
 
 // SUBMIT
-const LABELS = {project_name:'Project Name',requested_by:'Requested by',target_audience:'Target Audience',objective:'Objective',sample1_url:'Sample 1 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style','product-type-val':'Product Type','ads-deliverable-val':'Ads Deliverable Type'};
+const LABELS = {project_name:'Project Name',requested_by:'Requested by',company:'Company',target_audience:'Target Audience',objective:'Objective',sample1_url:'Sample 1 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style','product-type-val':'Product Type','ads-deliverable-val':'Ads Deliverable Type'};
 document.getElementById('brief-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const errEl = document.getElementById('error-msg'); errEl.style.display = 'none';
@@ -1115,6 +1135,7 @@ document.getElementById('brief-form').addEventListener('submit', async function(
     requested_by: document.querySelector('[name="requested_by"]')?.value||'',
     target_audience: document.querySelector('[name="target_audience"]')?.value||'',
     objective: document.querySelector('[name="objective"]')?.value||'',
+    company:       document.getElementById('company-val').value,
     product_type: document.getElementById('product-type-val').value,
     ads_deliverable_type: document.getElementById('ads-deliverable-val').value,
     urgency: isUrgent,
@@ -1151,7 +1172,7 @@ document.getElementById('brief-form').addEventListener('submit', async function(
   const when = now.toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur'});
   document.getElementById('brief-summary').innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
     +'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Project</span><strong>'+payload.project_name+'</strong></div>'
-    +'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Requested by</span><span>'+payload.requested_by+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Company</span><span>'+payload.company+'</span></div>'+'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Requested by</span><span>'+payload.requested_by+'</span></div>'
     +'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Ads type</span><span>'+payload.ads_deliverable_type+'</span></div>'
     +'<div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:var(--text2);">Month</span><span>'+monthYear+'</span></div>'
     +'<div style="border-top:1px solid var(--border);padding-top:8px;font-size:12px;color:var(--text3);">'+when+'</div></div>';
@@ -1198,7 +1219,7 @@ function renderResponses(rows) {
     return '<div class="response-card'+(isUrgent?' urgent-card':'')+'" id="rc-'+i+'">'
       +'<div class="rc-header" onclick="toggleCard('+i+')">'
       +'<div class="rc-left"><div class="rc-project">'+(isUrgent?'🔥 ':'')+'#'+(rows.length-i)+' \u2014 '+(r.project_name||'Untitled')+'</div>'
-      +'<div class="rc-meta"><span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span>'+(r.product_type?'<span>\u00b7 '+r.product_type+'</span>':'')+'</div></div>'
+      +'<div class="rc-meta">'+(r.company?'<span style="background:var(--purple4);color:var(--purple);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;">'+r.company+'</span>':'')+'<span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span>'+(r.product_type?'<span>\u00b7 '+r.product_type+'</span>':'')+'</div></div>'
       +'<div class="rc-right">'
       +'<button class="tick-btn" id="tick-'+r.id+'" data-id="'+r.id+'" data-idx="'+i+'" onclick="markComplete(this.dataset.id,+this.dataset.idx,event)" title="Mark complete \u2192 Archive"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Done</button>'
       +'<span class="status-badge" id="sbadge-'+r.id+'" style="background:'+st.bg+';color:'+st.color+'">'+st.label+'</span>'
@@ -1576,7 +1597,7 @@ function renderMonthlyCards(month, monthMap) {
     return '<div class="response-card'+(isUrgent?' urgent-card':'')+'" id="mc-'+i+'" style="margin-bottom:8px;border-radius:10px;">'
       +'<div class="rc-header" onclick="toggleMonthCard('+i+')">'
       +'<div class="rc-left"><div class="rc-project">'+(isUrgent?'\uD83D\uDD25 ':'')+(r.project_name||'Untitled')+'</div>'
-      +'<div class="rc-meta"><span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span></div></div>'
+      +'<div class="rc-meta">'+(r.company?'<span style="background:var(--purple4);color:var(--purple);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;">'+r.company+'</span>':'')+'<span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span></div></div>'
       +'<div class="rc-right">'
       +'<span class="status-badge" style="background:'+st.bg+';color:'+st.color+'">'+st.label+'</span>'
       +(r.deliverable_types?'<span class="deliverable-tag">'+r.deliverable_types.split(',')[0].trim()+'</span>':'')
@@ -1789,7 +1810,8 @@ function resetForm() {
   // Re-select Normal urgency
   const urgencyItems = document.querySelectorAll('#urgency-field .radio-item');
   if (urgencyItems[0]) urgencyItems[0].classList.add('selected');
-  ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','ads-deliverable-val'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','ads-deliverable-val','company-val'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const _rmy=document.getElementById('month-year-input'); if(_rmy){const _n=new Date();_rmy.value=_n.toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',year:'numeric'});}
   document.getElementById('urgency-val').value = 'normal';
   document.getElementById('error-msg').style.display = 'none';
   document.getElementById('dim-list').innerHTML = '<div class="dim-row"><input type="text" placeholder="e.g. 1080 \u00d7 1080 px \u2014 PNG + PSD" class="dim-size"><input type="text" placeholder="Format" class="dim-format"><button type="button" class="dim-remove" onclick="removeDim(this)">\u00d7</button></div>';
