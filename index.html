@@ -1421,23 +1421,22 @@ document.getElementById('brief-form').addEventListener('submit', async function(
 
 // ── EMAIL NOTIFICATION ──
 async function sendEmailNotification(payload) {
-  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return; // not configured yet
+  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return;
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email:        'nicolehwy@sunway.com.my, tanyuh@sunway.com.my',
-      project_name:    payload.project_name || '',
-      requested_by:    payload.requested_by || '',
-      company:         payload.company || '',
-      product_type:    payload.product_type || '',
-      deliverable_types: payload.deliverable_types || '',
-      due_date:        payload.due_date || 'Not specified',
-      requested_date:  payload.month_year || '',
-      urgency:         payload.urgency || 'Normal',
-      portal_link:     'https://visual-design-delta.vercel.app'
+      project_name:     payload.project_name || '',
+      requested_by:     payload.requested_by || '',
+      company:          payload.company || '',
+      product_type:     payload.product_type || '',
+      deliverable_types:payload.deliverable_types || '',
+      due_date:         payload.due_date || 'Not specified',
+      requested_date:   payload.month_year || payload.month_year_input || '',
+      urgency:          payload.urgency || 'Normal',
+      portal_link:      'https://visual-design-delta.vercel.app'
     });
-    console.log('Email notification sent');
+    console.log('Email sent OK');
   } catch(err) {
-    console.warn('Email failed:', err);
+    console.warn('EmailJS error:', JSON.stringify(err));
   }
 }
 
