@@ -309,7 +309,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 .chk-item.done .chk-box{opacity:1;background:var(--green);border-color:var(--green);}
 
 /* ── STATUS BOARD ── */
-.sb-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+.sb-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:start;}
 .sb-col{display:flex;flex-direction:column;gap:10px;}
 .sb-col-label{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
 .sb-col-name{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
@@ -344,6 +344,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 .sb-rev .sb-col-name{color:var(--orange);}.sb-rev .sb-col-count{background:var(--orange2);color:#92400E;}
 .sb-rev .sb-card-accent{background:linear-gradient(90deg,#FBB040,var(--orange));}.sb-rev .sb-card-dot{background:var(--orange);}
 .sb-rev .sb-card-tag{background:var(--orange2);color:#92400E;}.sb-rev .sb-progress-fill{background:linear-gradient(90deg,#FBB040,var(--orange));}
+.sb-com .sb-col-name{color:var(--green);}.sb-com .sb-col-count{background:var(--green2);color:#065F46;}
+.sb-com .sb-card-accent{background:linear-gradient(90deg,#34D399,var(--green));}.sb-com .sb-card-dot{background:var(--green);}
+.sb-com .sb-card-tag{background:var(--green2);color:#065F46;}.sb-com .sb-progress-fill{background:linear-gradient(90deg,#34D399,var(--green));}
 .sb-urg .sb-col-name{color:var(--red);}.sb-urg .sb-col-count{background:var(--red2);color:#991B1B;}
 .sb-urg .sb-card-accent{background:linear-gradient(90deg,#F87171,var(--red));}.sb-urg .sb-card-dot{background:var(--red);}
 .sb-urg .sb-card-tag{background:var(--red2);color:#991B1B;}.sb-urg .sb-progress-fill{background:linear-gradient(90deg,#F87171,var(--red));}
@@ -376,7 +379,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 .bell-ring svg{animation:bellring .6s ease;}
 
 /* ── RESPONSIVE ── */
-@media(max-width:1024px){
+@media(max-width:1200px){
+  .sb-cols{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:820px){
   .sb-cols{grid-template-columns:repeat(2,1fr);}
   .rb-two-col{grid-template-columns:1fr;}
 }
@@ -1335,32 +1340,53 @@ async function toggleCheck(id, key, el) {
 // STATUS BOARD
 async function loadStatusBoard() {
   const board = document.getElementById('kanban-board');
-  board.innerHTML = '<div class="loading-state"><span class="spinner"></span>Loading\u2026</div>';
+  board.innerHTML = '<div class="loading-state"><span class="spinner"></span>Loading…</div>';
   try {
-    const rows = await fetchBriefs('status=neq.archived&status=neq.completed&status=neq.trash');
+    const res = await fetch(SB_URL+'/rest/v1/design_brief_submissions?order=id.desc&status=neq.archived&status=neq.trash', {headers:SBH});
+    const rows = await res.json();
+    if (!Array.isArray(rows)) throw new Error(JSON.stringify(rows));
     renderStatusBoard(rows);
   } catch(err) { board.innerHTML='<div class="empty-state"><p>Could not load: '+err+'</p></div>'; }
 }
+
 
 function renderStatusBoard(rows) {
   const board = document.getElementById('kanban-board');
   const isUrgF = r => r.urgency==='Urgent'||r.urgency==='urgent';
   const urgRows = rows.filter(r=>isUrgF(r));
   const cols = [
-    {key:'new',cls:'sb-new',label:'New'},
+    {key:'new',       cls:'sb-new', label:'New'},
     {key:'in_progress',cls:'sb-inp',label:'In Progress'},
-    {key:'review',cls:'sb-rev',label:'In Review'},
-    {key:'urgent_x',cls:'sb-urg',label:'Urgent',isUrgent:true}
+    {key:'review',    cls:'sb-rev', label:'In Review'},
+    {key:'completed', cls:'sb-com', label:'Completed'},
+    {key:'urgent_x',  cls:'sb-urg', label:'Urgent', isUrgent:true}
   ];
+  const SEQ = ['new','in_progress','review','completed'];
   const ini = name => (name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   const mkCard = r => {
     const checks = r.checklist||{};
     const done = CHECK_ITEMS.filter(ci=>checks[ci.key]).length;
     const pct = Math.round(done/CHECK_ITEMS.length*100);
     const when = r.submitted_at ? new Date(r.submitted_at).toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',day:'numeric'}) : '';
-    const mvBtns = ['new','in_progress','review'].filter(s=>s!==(r.status||'new')).map(s=>{
-      const sl=getSt(s); return '<button class="sb-btn sb-btn-move" data-id="'+r.id+'" data-status="'+s+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">'+sl.label+'</button>';
-    }).join('');
+    const st = r.status||'new';
+    const idx = SEQ.indexOf(st);
+    let actions = '';
+    // Prev button (back one step)
+    if (idx > 0) {
+      const ps = getSt(SEQ[idx-1]);
+      actions += '<button class="sb-btn sb-btn-move" style="background:'+ps.bg+';color:'+ps.color+'" data-id="'+r.id+'" data-status="'+SEQ[idx-1]+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">&larr; '+ps.label+'</button>';
+    }
+    // Next button (forward one step)
+    if (idx >= 0 && idx < SEQ.length-1) {
+      const ns = getSt(SEQ[idx+1]);
+      actions += '<button class="sb-btn sb-btn-move" style="background:'+ns.bg+';color:'+ns.color+'" data-id="'+r.id+'" data-status="'+SEQ[idx+1]+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">'+ns.label+' &rarr;</button>';
+    }
+    // Archive button when completed
+    if (st === 'completed') {
+      actions += '<button class="sb-btn sb-btn-complete" data-id="'+r.id+'" onclick="completeCard(this.dataset.id,event)">Archive</button>';
+    }
+    // Trash always
+    actions += '<button class="sb-btn sb-btn-trash" data-id="'+r.id+'" onclick="trashCard(this.dataset.id,event)">Trash</button>';
     return '<div class="sb-card'+(isUrgF(r)?' urgent-card':'')+'">'
       +'<div class="sb-card-accent"></div>'
       +'<div class="sb-card-top"><div class="sb-card-name">'+(r.project_name||'Untitled')+'</div><div class="sb-card-dot"></div></div>'
@@ -1368,11 +1394,7 @@ function renderStatusBoard(rows) {
       +(r.deliverable_types?'<div class="sb-card-tag">'+r.deliverable_types.split(',')[0].trim()+'</div>':'')
       +'<div class="sb-progress-wrap"><div class="sb-progress-bar"><div class="sb-progress-fill" style="width:'+pct+'%"></div></div>'
       +'<div class="sb-progress-label"><span>Checklist</span><span>'+pct+'%</span></div></div>'
-      +'<div class="sb-card-actions">'
-      +'<button class="sb-btn sb-btn-complete" data-id="'+r.id+'" onclick="completeCard(this.dataset.id,event)">Complete</button>'
-      +mvBtns
-      +'<button class="sb-btn sb-btn-trash" data-id="'+r.id+'" onclick="trashCard(this.dataset.id,event)">Trash</button>'
-      +'</div></div>';
+      +'<div class="sb-card-actions">'+actions+'</div></div>';
   };
   board.innerHTML = cols.map(col=>{
     const cards = col.isUrgent ? urgRows : rows.filter(r=>(r.status||'new')===col.key && !isUrgF(r));
