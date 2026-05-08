@@ -1000,11 +1000,29 @@ async function updateStatus(id, status, badgeId) {
   const st = getSt(status);
   try {
     await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
-      method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'}, body:JSON.stringify({status})
+      method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'},
+      body:JSON.stringify({status, completed_at: status==='archived'?new Date().toISOString():null})
     });
     const badge = document.getElementById('sbadge-'+badgeId);
     if (badge) { badge.textContent=st.label; badge.style.background=st.bg; badge.style.color=st.color; }
     showNotif('📢 Status updated to: '+st.label);
+    // If archived — remove card from responses view and refresh archive tab
+    if (status === 'archived') {
+      const card = badge ? badge.closest('.response-card') : null;
+      if (card) {
+        card.style.transition = 'opacity .35s, transform .35s';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        setTimeout(() => { card.remove(); loadResponses(); }, 400);
+      }
+      loadArchive();
+      const archiveCount = document.getElementById('count-archive');
+      if (archiveCount) archiveCount.textContent = (parseInt(archiveCount.textContent||'0')+1).toString();
+    }
+    // If trash — refresh trash tab
+    if (status === 'trash') {
+      loadTrash();
+    }
   } catch(err) { console.warn('Status update failed:',err); }
 }
 
@@ -1399,24 +1417,39 @@ async function deleteForever(id, event) {
 }
 
 // DELETE from any tab
+// ── Move to trash (soft delete) — from Responses, Checklist, Archive ──
 async function deleteCard(id, btn, event) {
   event.stopPropagation();
   if (btn.dataset.confirming === 'true') {
     btn.dataset.confirming = '';
-    btn.textContent = 'Deleting...';
+    btn.textContent = 'Moving to Trash…';
     try {
       await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
-        method:'DELETE', headers:SBH
+        method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'},
+        body:JSON.stringify({status:'trash'})
       });
-      showNotif('Brief deleted');
+      showNotif('🗑 Moved to Trash Bin');
+      // Animate card out
       const card = btn.closest('.response-card') || btn.closest('.cl-card') || btn.closest('.archive-card');
-      if (card) { card.style.opacity='0'; card.style.transition='opacity .3s'; setTimeout(()=>card.remove(),350); }
-      setTimeout(()=>{ loadResponses(); loadChecklist(); loadArchive(); loadTrash(); }, 400);
-    } catch(err) { console.warn('Delete failed:', err); btn.textContent = 'Delete'; }
+      if (card) {
+        card.style.transition = 'opacity .35s, transform .35s';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        setTimeout(() => card.remove(), 380);
+      }
+      // Update trash tab count and reload if open
+      const trashCount = document.getElementById('count-trash');
+      if (trashCount) trashCount.textContent = (parseInt(trashCount.textContent||'0')+1).toString();
+      const trashTab = document.getElementById('tab-trash');
+      if (trashTab && trashTab.classList.contains('active')) loadTrash();
+      else loadTrash(); // always refresh so count is right
+      // Refresh source tab
+      setTimeout(() => { loadResponses(); loadChecklist(); loadArchive(); }, 400);
+    } catch(err) { console.warn('Trash failed:', err); btn.textContent = 'Delete'; }
   } else {
     btn.dataset.confirming = 'true';
     const orig = btn.innerHTML;
-    btn.innerHTML = 'Confirm delete?';
+    btn.innerHTML = '⚠ Move to Trash?';
     btn.style.color = '#C0392B';
     btn.style.borderColor = '#C0392B';
     setTimeout(() => {
