@@ -528,9 +528,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
         <div class="form-progress-wrap"><div class="form-progress-fill" id="progress-bar"></div></div>
       </div>
 
-      <form id="brief-form" novalidate style="width:100%;">
+      <form id="brief-form" novalidate style="width:100%;display:flex;flex-direction:column;gap:20px;">
 
-        <div class="form-grid" style="margin-bottom:16px;">
+        <!-- 01 PROJECT OVERVIEW -->
         <div class="section-card">
           <div class="section-header"><div class="snum">01</div><div class="stitle">Project Overview</div></div>
           <div class="section-body">
@@ -557,10 +557,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
               </div>
             </div>
             <div class="field"><label>Target Audience <span class="req">★</span></label><input type="text" name="target_audience" placeholder="e.g. Women 25–40, interested in skincare" required></div>
-            <div class="field"><label>Objective <span class="req">★</span></label><textarea name="objective" rows="2" placeholder="What must this design make the audience do or feel?" required></textarea></div>
+            <div class="field"><label>Objective <span class="req">★</span></label><textarea name="objective" rows="3" placeholder="What must this design make the audience do or feel?" required></textarea></div>
             <div class="field">
               <label>Ads Deliverable Type <span class="req">★</span></label>
-              <div class="radio-grid" id="ads-deliverable" style="grid-template-columns:1fr 1fr 1fr;">
+              <div class="radio-grid" id="ads-deliverable" style="grid-template-columns:repeat(3,1fr);">
                 <label class="radio-item"><div class="rdot"></div>Awareness</label>
                 <label class="radio-item"><div class="rdot"></div>Lead Generation</label>
                 <label class="radio-item"><div class="rdot"></div>Traffic</label>
@@ -586,7 +586,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           </div>
         </div>
 
-        <div class="section-card" id="copy-section" style="margin-top:14px;">
+        <!-- 02 COPY & CONTENT -->
+        <div class="section-card" id="copy-section">
           <div class="section-header">
             <div class="snum muted" id="copy-snum">02</div>
             <div class="stitle">Copy & Content</div>
@@ -597,63 +598,70 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           <div id="pw-prompt">
             <div style="width:44px;height:44px;background:var(--purple4);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
             <h3>Nicole Hew access only</h3>
-            <p>Enter the password to unlock.</p>
+            <p>Enter password to unlock.</p>
             <div class="pw-row" id="pw-row">
               <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doUnlock()">
               <button type="button" class="eye-btn" onclick="toggleEye()"><svg id="eye-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
               <button type="button" class="pw-unlock-btn" onclick="doUnlock()">Unlock</button>
             </div>
             <span class="pw-err-msg" id="pw-err-msg">Incorrect password.</span>
-            <button type="button" onclick="closePrompt()" style="background:none;border:none;font-size:12.5px;color:var(--text3);cursor:pointer;margin-top:-5px;">Cancel</button>
+            <button type="button" onclick="closePrompt()" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer;margin-top:-4px;">Cancel</button>
           </div>
           <div class="section-body" id="copy-fields">
             <div class="info-notice" id="copy-locked-notice"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Managed by <strong>Nicole Hew</strong>. Click unlock above.</span></div>
-            <div id="copy-locked-placeholders"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="field"><label>Visual Headline</label><div class="locked-field"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password required</div></div><div class="field"><label>Ads Headline</label><div class="locked-field"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password required</div></div></div></div>
+            <div id="copy-locked-placeholders">
+              <div class="field-row">
+                <div class="field"><label>Visual Headline</label><div class="locked-field"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password required</div></div>
+                <div class="field"><label>Ads Headline</label><div class="locked-field"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password required</div></div>
+              </div>
+            </div>
             <div id="copy-real-fields" style="display:none;flex-direction:column;gap:16px;">
               <div style="display:flex;align-items:center;gap:8px;background:var(--green2);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:#065F46;font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Unlocked — welcome, Nicole!</div>
               <div class="field-row"><div class="field"><label>Visual Headline</label><input type="text" name="headline" placeholder="Aim ≤60 chars"></div><div class="field"><label>Ads Headline</label><input type="text" name="ads_headline" placeholder="Short headline"></div></div>
               <div class="field"><label>Ads Copy</label><textarea name="ads_copy" rows="2" placeholder="Aim ≤100 chars"></textarea></div>
               <div class="field-row"><div class="field"><label>Primary CTA</label><input type="text" name="cta_primary" placeholder="e.g. Shop Now"></div><div class="field"><label>Destination URL</label><input type="url" name="cta_url" placeholder="https://..."></div></div>
               <div class="field-row"><div class="field"><label>Secondary CTA</label><input type="text" name="cta_secondary" placeholder="e.g. Learn More"></div><div class="field"><label>Secondary URL</label><input type="url" name="cta_secondary_url" placeholder="https://..."></div></div>
-              <div class="field"><label>Disclaimers / Hashtags</label><textarea name="disclaimers" rows="2" placeholder="T&C apply | #RayaSale | @brandname"></textarea></div>
+              <div class="field"><label>Disclaimers / Hashtags</label><textarea name="disclaimers" rows="2" placeholder="T&amp;C apply | #RayaSale | @brandname"></textarea></div>
               <div style="display:flex;justify-content:flex-end;"><button type="button" onclick="relockSection()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;">Lock again</button></div>
             </div>
           </div>
         </div>
 
-        <div class="section-card" style="margin-top:14px;">
+        <!-- 03 VISUAL DIRECTION -->
+        <div class="section-card">
           <div class="section-header"><div class="snum">03</div><div class="stitle">Visual Direction</div></div>
           <div class="section-body">
-            <div class="field">
-              <label>Design Mood <span class="req">★</span></label>
-              <div class="radio-grid" id="design-mood" style="grid-template-columns:1fr 1fr;">
-                <label class="radio-item"><div class="rdot"></div>Formal</label>
-                <label class="radio-item"><div class="rdot"></div>Not Formal</label>
+            <div class="field-row">
+              <div class="field">
+                <label>Design Mood <span class="req">★</span></label>
+                <div class="radio-grid" id="design-mood" style="grid-template-columns:1fr 1fr;">
+                  <label class="radio-item"><div class="rdot"></div>Formal</label>
+                  <label class="radio-item"><div class="rdot"></div>Not Formal</label>
+                </div>
+                <input type="hidden" name="design_mood" id="design-mood-val">
               </div>
-              <input type="hidden" name="design_mood" id="design-mood-val">
+              <div class="field">
+                <label>Imagery Style <span class="req">★</span></label>
+                <div class="radio-grid" id="imagery-style" style="grid-template-columns:1fr 1fr;">
+                  <label class="radio-item"><div class="rdot"></div>Lifestyle photo</label>
+                  <label class="radio-item"><div class="rdot"></div>Product-only</label>
+                  <label class="radio-item"><div class="rdot"></div>Illustrated</label>
+                  <label class="radio-item"><div class="rdot"></div>Abstract</label>
+                  <label class="radio-item"><div class="rdot"></div>Type-driven</label>
+                  <label class="radio-item"><div class="rdot"></div>AI-generated</label>
+                </div>
+                <input type="hidden" name="imagery_style" id="imagery-style-val">
+              </div>
             </div>
             <div class="field">
               <label>Colour Direction <span class="req">★</span></label>
-              <div class="radio-grid" id="colour-direction">
+              <div class="radio-grid" id="colour-direction" style="grid-template-columns:repeat(3,1fr);">
                 <label class="radio-item"><div class="rdot"></div>Brand colours only</label>
                 <label class="radio-item"><div class="rdot"></div>Brand + discretion</label>
                 <label class="radio-item"><div class="rdot"></div>Designer leads</label>
               </div>
               <input type="hidden" name="colour_direction" id="colour-direction-val">
             </div>
-            <div class="field">
-              <label>Imagery Style <span class="req">★</span></label>
-              <div class="radio-grid" id="imagery-style">
-                <label class="radio-item"><div class="rdot"></div>Lifestyle photo</label>
-                <label class="radio-item"><div class="rdot"></div>Product-only</label>
-                <label class="radio-item"><div class="rdot"></div>Illustrated</label>
-                <label class="radio-item"><div class="rdot"></div>Abstract</label>
-                <label class="radio-item"><div class="rdot"></div>Type-driven</label>
-                <label class="radio-item"><div class="rdot"></div>AI-generated</label>
-              </div>
-              <input type="hidden" name="imagery_style" id="imagery-style-val">
-            </div>
-            <hr class="divider">
             <div class="field">
               <label>Dimensions & Format <span class="req">★</span></label>
               <div class="dim-list" id="dim-list">
@@ -664,14 +672,14 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           </div>
         </div>
 
-        <div class="form-grid" style="margin-top:16px;margin-bottom:16px;">
+        <!-- 04 REFERENCES -->
         <div class="section-card">
           <div class="section-header"><div class="snum">04</div><div class="stitle">References</div></div>
           <div class="section-body">
             <div class="field">
               <label>Design Samples</label>
-              <span class="hint" style="margin-bottom:8px;">Sample 1 required. 2 & 3 optional.</span>
-              <div style="display:flex;flex-direction:column;gap:10px;">
+              <span class="hint" style="margin-bottom:8px;">Sample 1 required. 2 &amp; 3 optional.</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
                 <div class="sample-block"><div class="sample-label">Sample 1 <span class="req-badge">Required</span></div><input type="url" name="sample1_url" placeholder="https://" required><textarea name="sample1_notes" placeholder="What you like about it" rows="2"></textarea></div>
                 <div class="sample-block"><div class="sample-label">Sample 2 <span class="opt-badge">Optional</span></div><input type="url" name="sample2_url" placeholder="https://"><textarea name="sample2_notes" placeholder="What you like about it" rows="2"></textarea></div>
                 <div class="sample-block"><div class="sample-label">Sample 3 <span class="opt-badge">Optional</span></div><input type="url" name="sample3_url" placeholder="https://"><textarea name="sample3_notes" placeholder="What you like about it" rows="2"></textarea></div>
@@ -680,15 +688,20 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           </div>
         </div>
 
+        <!-- 05 NOTES -->
         <div class="section-card">
           <div class="section-header"><div class="snum">05</div><div class="stitle">Additional Notes</div></div>
-          <div class="section-body"><div class="field"><textarea name="additional_notes" rows="3" placeholder="Any other context..."></textarea></div></div>
+          <div class="section-body">
+            <div class="field"><textarea name="additional_notes" rows="4" placeholder="Any other context the designer should know..."></textarea></div>
+          </div>
         </div>
 
-        <div style="margin-top:20px;">
+        <!-- SUBMIT -->
+        <div>
           <div class="error-msg" id="error-msg"></div>
           <button type="submit" class="submit-btn" id="submit-btn">Submit Design Brief</button>
         </div>
+
       </form>
 
       <div id="success-screen">
