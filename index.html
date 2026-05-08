@@ -108,7 +108,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0EFFF;color:var(--text);font-
 .sidebar-footer-info{font-size:11.5px;color:var(--text3);padding:8px 10px;background:var(--purple4);border-radius:var(--radius);line-height:1.5;white-space:nowrap;overflow:hidden;}
 
 /* ── MAIN ── */
-.main-area{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left .25s ease;}
+.main-area{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left .25s ease;min-width:0;overflow-x:hidden;}
 .main-area.sidebar-hidden{margin-left:0;}
 
 /* ── TOP HEADER ── */
@@ -152,8 +152,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0EFFF;color:var(--text);font-
 .tab-nav{display:none;}
 
 /* ── CONTENT AREA ── */
-.content-area{padding:32px 40px;flex:1;}
-.content-area.narrow{max-width:900px;}
+.content-area{padding:32px 40px;flex:1;width:100%;box-sizing:border-box;}
 
 /* ── PAGE HEADER ── */
 .page-header{margin-bottom:24px;}
@@ -173,7 +172,12 @@ body{font-family:'DM Sans',sans-serif;background:#F0EFFF;color:var(--text);font-
 .stat-sub{font-size:11.5px;color:var(--text3);margin-top:4px;}
 
 /* ── FORM ── */
-.section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;width:100%;}
+.section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+/* Form uses side-by-side layout on wide screens */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+.form-grid .section-card{margin-bottom:0;}
+.form-grid .form-wide{grid-column:1/-1;}
+@media(max-width:900px){.form-grid{grid-template-columns:1fr;}}
 .section-header{display:flex;align-items:center;gap:12px;padding:18px 26px;border-bottom:1px solid var(--border);background:var(--surface2);}
 .snum{width:28px;height:28px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
 .snum.muted{background:linear-gradient(135deg,#C8C6E8,#B0AED8);}
@@ -511,7 +515,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
     <!-- ===== FORM TAB ===== -->
     <div class="tab-pane active" id="tab-form">
-    <div class="content-area narrow">
+    <div class="content-area">
       <div class="page-header">
         <h1>Submit Design Brief</h1>
         <p>Complete all required fields. The more detail you give, the better the result.</p>
@@ -524,8 +528,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
         <div class="form-progress-wrap"><div class="form-progress-fill" id="progress-bar"></div></div>
       </div>
 
-      <form id="brief-form" novalidate style="display:flex;flex-direction:column;gap:0;">
+      <form id="brief-form" novalidate style="width:100%;">
 
+        <div class="form-grid" style="margin-bottom:16px;">
         <div class="section-card">
           <div class="section-header"><div class="snum">01</div><div class="stitle">Project Overview</div></div>
           <div class="section-body">
@@ -659,7 +664,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           </div>
         </div>
 
-        <div class="section-card" style="margin-top:14px;">
+        <div class="form-grid" style="margin-top:16px;margin-bottom:16px;">
+        <div class="section-card">
           <div class="section-header"><div class="snum">04</div><div class="stitle">References</div></div>
           <div class="section-body">
             <div class="field">
@@ -674,7 +680,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           </div>
         </div>
 
-        <div class="section-card" style="margin-top:14px;">
+        <div class="section-card">
           <div class="section-header"><div class="snum">05</div><div class="stitle">Additional Notes</div></div>
           <div class="section-body"><div class="field"><textarea name="additional_notes" rows="3" placeholder="Any other context..."></textarea></div></div>
         </div>
@@ -711,7 +717,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
     <!-- ===== CHECKLIST TAB ===== -->
     <div class="tab-pane" id="tab-checklist">
-    <div class="content-area narrow">
+    <div class="content-area">
       <div class="page-header"><h1>Designer Checklist</h1><p>Track progress per brief</p></div>
       <div id="checklist-container"><div class="loading-state"><span class="spinner"></span>Loading…</div></div>
     </div>
@@ -719,7 +725,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
     <!-- ===== STATUS BOARD TAB ===== -->
     <div class="tab-pane" id="tab-status">
-    <div class="content-area" style="max-width:100%;">
+    <div class="content-area">
       <div class="page-header"><h1>Status Board</h1><p>Drag briefs through stages</p></div>
       <div class="sb-cols" id="kanban-board"><div class="loading-state"><span class="spinner"></span>Loading…</div></div>
     </div>
@@ -736,7 +742,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
     <!-- ===== ARCHIVE TAB ===== -->
     <div class="tab-pane" id="tab-archive">
-    <div class="content-area narrow">
+    <div class="content-area">
       <div class="page-header"><h1>Archive</h1><p>Completed briefs</p></div>
       <div id="archive-container"><div class="loading-state"><span class="spinner"></span>Loading…</div></div>
     </div>
@@ -744,7 +750,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 
     <!-- ===== TRASH TAB ===== -->
     <div class="tab-pane" id="tab-trash">
-    <div class="content-area narrow">
+    <div class="content-area">
       <div class="page-header"><h1>Trash Bin</h1><p>Deleted briefs — restore or delete forever</p></div>
       <div id="trash-container"><div class="loading-state"><span class="spinner"></span>Loading…</div></div>
     </div>
