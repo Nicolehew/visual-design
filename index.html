@@ -560,9 +560,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
             <div class="field-row">
               <div class="field">
                 <label>Product Type <span class="req">★</span></label>
-                <div class="radio-grid" id="product-type" style="grid-template-columns:1fr 1fr;">
-                  <label class="radio-item"><div class="rdot"></div>Personal</label>
-                  <label class="radio-item"><div class="rdot"></div>Business</label>
+                <div class="radio-grid" id="product-type" style="grid-template-columns:1fr 1fr 1fr;">
+                  <label class="radio-item"><div class="rdot"></div><span><strong>Personal</strong><span style="display:block;font-size:11px;opacity:.7;">MyScore</span></span></label>
+                  <label class="radio-item"><div class="rdot"></div><span><strong>Business</strong><span style="display:block;font-size:11px;opacity:.7;">CreditPro</span></span></label>
+                  <label class="radio-item"><div class="rdot"></div><span><strong>Landlords</strong><span style="display:block;font-size:11px;opacity:.7;">RentGuard</span></span></label>
                 </div>
                 <input type="hidden" name="product_type" id="product-type-val">
               </div>
@@ -994,7 +995,21 @@ if (_myEl) _myEl.value = _my;
 initRadio('design-mood','design-mood-val');
 initRadio('colour-direction','colour-direction-val');
 initRadio('imagery-style','imagery-style-val');
-initRadio('product-type','product-type-val');
+// Custom init for product-type (has sub-labels)
+(function(){
+  const g = document.getElementById('product-type');
+  const h = document.getElementById('product-type-val');
+  if (!g) return;
+  const vals = ['Personal — MyScore','Business — CreditPro','Landlords — RentGuard'];
+  g.querySelectorAll('.radio-item').forEach((item, idx) => {
+    item.addEventListener('click', () => {
+      g.querySelectorAll('.radio-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      h.value = vals[idx];
+      updateProgress();
+    });
+  });
+})();
 initRadio('company-field','company-val');
 initRadio('ads-deliverable','ads-deliverable-val');
 initRadio('urgency-field','urgency-val');
