@@ -839,7 +839,7 @@ function renderResponses(rows) {
       +'<div class="rc-left"><div class="rc-project">'+(isUrgent?'🔥 ':'')+'#'+(rows.length-i)+' \u2014 '+(r.project_name||'Untitled')+'</div>'
       +'<div class="rc-meta"><span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span>'+(r.product_type?'<span>\u00b7 '+r.product_type+'</span>':'')+'</div></div>'
       +'<div class="rc-right">'
-      +'<button class="tick-btn" id="tick-'+r.id+'" onclick="markComplete(\''+r.id+'\','+i+',event)" title="Mark complete \u2192 Archive"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Done</button>'
+      +'<button class="tick-btn" id="tick-'+r.id+'" data-id="'+r.id+'" data-idx="'+i+'" onclick="markComplete(this.dataset.id,+this.dataset.idx,event)" title="Mark complete \u2192 Archive"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Done</button>'
       +'<span class="status-badge" id="sbadge-'+r.id+'" style="background:'+st.bg+';color:'+st.color+'">'+st.label+'</span>'
       +(r.deliverable_types?'<span class="deliverable-tag">'+r.deliverable_types.split(',')[0].trim()+'</span>':'')
       +'<svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div></div>'
@@ -865,7 +865,7 @@ function renderResponses(rows) {
       +(r.additional_notes?'<div class="rb-row"><div class="rb-key">Notes</div><div class="rb-val">'+r.additional_notes+'</div></div>':'')
       +'</div></div>'
       +'<div class="rb-sidebar"><div class="rb-title" style="margin-bottom:7px;">Status</div>'
-      +'<select class="status-select" onchange="updateStatus(\''+r.id+'\',this.value,\''+r.id+'\')" onclick="event.stopPropagation()">'+statusOpts+'</select>'
+      +'<select class="status-select" data-id="'+r.id+'" onchange="updateStatus(this.dataset.id,this.value,this.dataset.id)" onclick="event.stopPropagation()">'+statusOpts+'</select>'
       +'<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;">'
       +'<div class="rb-title" style="margin-bottom:6px;">Month</div>'
       +'<div style="font-size:13px;color:var(--text2);">'+(r.month_year||'\u2014')+'</div></div>'
@@ -874,6 +874,7 @@ function renderResponses(rows) {
 }
 
 function toggleCard(i) { document.getElementById('rc-'+i).classList.toggle('open'); }
+function toggleMonthCard(i) { document.getElementById('mc-'+i).classList.toggle('open'); }
 
 async function markComplete(id, cardIdx, event) {
   event.stopPropagation();
@@ -921,7 +922,7 @@ async function loadChecklist() {
       const pct = Math.round(doneCount/CHECK_ITEMS.length*100);
       const isUrgent = r.urgency==='🔥 Urgent'||r.urgency==='urgent';
       const st = getSt(r.status||'new');
-      const checkHtml = CHECK_ITEMS.map(ci=>'<div class="chk-item '+(checks[ci.key]?'done':'')+'" onclick="toggleCheck(\''+r.id+'\',\''+ci.key+'\',this)">'
+      const checkHtml = CHECK_ITEMS.map(ci=>'<div class="chk-item '+(checks[ci.key]?'done':'')+'" data-id="'+r.id+'" data-key="'+ci.key+'" onclick="toggleCheck(this.dataset.id,this.dataset.key,this)">'
         +'<div class="chk-box">'+(checks[ci.key]?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>':'')+'</div>'
         +'<span>'+ci.label+'</span></div>').join('');
       return '<div class="cl-card'+(isUrgent?' urgent-card':'')+'">'
@@ -980,9 +981,9 @@ function renderStatusBoard(rows) {
     const pct = Math.round(doneCount/CHECK_ITEMS.length*100);
     const when = r.submitted_at ? new Date(r.submitted_at).toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',day:'numeric'}) : '';
     const st = getSt(r.status||'new');
-    const targets = mainCols.filter(s=>s!==(r.status||'new')).map(s=>'<button class="kc-status-btn" style="background:'+getSt(s).bg+';color:'+getSt(s).color+'" onclick="moveCard(\''+r.id+'\',\''+s+'\',event)">'+getSt(s).label+'</button>');
-    targets.push('<button class="kc-status-btn" style="background:#E1F5EE;color:#0F6E56" onclick="moveCard(\''+r.id+'\',\'archived\',event)">\u2713 Archive</button>');
-    targets.push('<button class="kc-status-btn" style="background:#F0EEEB;color:#888" onclick="trashCard(\''+r.id+'\',event)">\uD83D\uDDD1 Trash</button>');
+    const targets = mainCols.filter(s=>s!==(r.status||'new')).map(s=>'<button class="kc-status-btn" style="background:'+getSt(s).bg+';color:'+getSt(s).color+'" data-id="'+r.id+'" data-status="'+s+'" onclick="moveCard(this.dataset.id,this.dataset.status,event)">'+getSt(s).label+'</button>');
+    targets.push('<button class="kc-status-btn" style="background:#E1F5EE;color:#0F6E56" data-id="'+r.id+'" data-status="archived" onclick="moveCard(this.dataset.id,this.dataset.status,event)">\u2713 Archive</button>');
+    targets.push('<button class="kc-status-btn" style="background:#F0EEEB;color:#888" data-id="'+r.id+'" onclick="trashCard(this.dataset.id,event)">\uD83D\uDDD1 Trash</button>');
     return '<div class="kanban-card'+(isUrgentFn(r)?' urgent-card':'')+'">'
       +'<div class="kc-project">'+(r.project_name||'Untitled')+'</div>'
       +'<div class="kc-meta">'+when+' \u00b7 '+(r.requested_by||'?')+'</div>'
@@ -1076,7 +1077,7 @@ async function loadMonthly() {
     if (!activeMonth || !months.includes(activeMonth)) activeMonth = months[0];
 
     tabsEl.innerHTML = months.map(m =>
-      '<button class="month-tab'+(m===activeMonth?' active':'')+'" onclick="selectMonth(\''+m+'\',this)">'+
+      '<button class="month-tab'+(m===activeMonth?' active':'')+'" data-month="'+m+'" onclick="selectMonth(this.dataset.month,this)">'+
       '\uD83D\uDCC1 '+m+' <span style="font-size:11px;opacity:.65;">('+monthMap[m].length+')</span></button>'
     ).join('');
 
@@ -1116,7 +1117,7 @@ function renderMonthlyCards(month, monthMap) {
     const st = getSt(r.status||'new');
     const isUrgent = r.urgency==='\uD83D\uDD25 Urgent'||r.urgency==='urgent';
     return '<div class="response-card'+(isUrgent?' urgent-card':'')+'" id="mc-'+i+'" style="margin-bottom:8px;border-radius:10px;">'
-      +'<div class="rc-header" onclick="document.getElementById(\'mc-'+i+'\').classList.toggle(\'open\')">'
+      +'<div class="rc-header" onclick="toggleMonthCard('+i+')">'
       +'<div class="rc-left"><div class="rc-project">'+(isUrgent?'\uD83D\uDD25 ':'')+(r.project_name||'Untitled')+'</div>'
       +'<div class="rc-meta"><span>By '+(r.requested_by||'\u2014')+'</span><span>\u00b7 '+when+'</span></div></div>'
       +'<div class="rc-right">'
@@ -1183,13 +1184,13 @@ async function loadArchive() {
         +'<div><div class="rb-key">Ads type</div><div class="rb-val">'+(r.ads_deliverable_type||'\u2014')+'</div></div>'
         +'<div><div class="rb-key">Mood</div><div class="rb-val">'+(r.design_mood||'\u2014')+'</div></div>'
         +'<div><div class="rb-key">Product type</div><div class="rb-val">'+(r.product_type||'\u2014')+'</div></div></div>'
-        +'<div style="margin-top:12px;"><button onclick="restoreFromArchive(\''+r.id+'\','+i+',event)" style="font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\u21ba Restore to Active</button></div>'
+        +'<div style="margin-top:12px;"><button data-id="'+r.id+'" onclick="restoreFromArchive(this.dataset.id,event)" style="font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\u21ba Restore to Active</button></div>'
         +'</div></div>';
     }).join('');
   } catch(err) { c.innerHTML='<div class="empty-state"><p>Could not load: '+err+'</p></div>'; }
 }
 function toggleArchiveCard(i) { document.getElementById('ac-'+i).classList.toggle('open'); }
-async function restoreFromArchive(id, cardIdx, event) {
+async function restoreFromArchive(id, event) {
   event.stopPropagation();
   try {
     await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
@@ -1216,7 +1217,7 @@ async function loadTrash() {
     c.innerHTML = rows.map((r,i) => {
       const when = r.submitted_at ? new Date(r.submitted_at).toLocaleString('en-MY',{timeZone:'Asia/Kuala_Lumpur',month:'short',day:'numeric',year:'numeric'}) : '\u2014';
       return '<div class="archive-card" id="tc-'+i+'">'
-        +'<div class="archive-header" onclick="document.getElementById(\'tc-'+i+'\').classList.toggle(\'open\')">'
+        +'<div class="archive-header" onclick="toggleArchiveCard('+i+')">'
         +'<div class="archive-title">'+(r.project_name||'Untitled')+'</div>'
         +'<div class="archive-meta">By '+(r.requested_by||'?')+' \u00b7 '+when+'</div>'
         +'<span class="archive-badge" style="background:#FDECEA;color:#C0392B;">Trashed</span>'
@@ -1224,8 +1225,8 @@ async function loadTrash() {
         +'<div class="response-body" style="padding:14px 16px;">'
         +'<div style="font-size:13px;color:var(--text2);margin-bottom:10px;">'+(r.deliverable_types||'\u2014')+' \u00b7 '+(r.design_mood||'')+'</div>'
         +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-        +'<button onclick="restoreFromTrash(\''+r.id+'\',event)" style="font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\u21ba Restore to Active</button>'
-        +'<button onclick="deleteForever(\''+r.id+'\',event)" style="font-size:12px;color:#C0392B;background:none;border:1px solid #C0392B;border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\uD83D\uDDD1 Delete forever</button>'
+        +'<button data-id="'+r.id+'" onclick="restoreFromTrash(this.dataset.id,event)" style="font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\u21ba Restore to Active</button>'
+        +'<button data-id="'+r.id+'" onclick="deleteForever(this.dataset.id,event)" style="font-size:12px;color:#C0392B;background:none;border:1px solid #C0392B;border-radius:20px;padding:4px 12px;cursor:pointer;font-family:\'DM Sans\',sans-serif;">\uD83D\uDDD1 Delete forever</button>'
         +'</div></div></div>';
     }).join('');
   } catch(err) { c.innerHTML='<div class="empty-state"><p>Could not load: '+err+'</p></div>'; }
