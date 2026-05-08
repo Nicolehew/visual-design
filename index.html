@@ -575,10 +575,11 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
             <div class="field-row">
               <div class="field">
                 <label>Product Type <span class="req">★</span></label>
-                <div class="radio-grid" id="product-type" style="grid-template-columns:1fr 1fr 1fr;">
+                <div class="radio-grid" id="product-type" style="grid-template-columns:1fr 1fr 1fr 1fr;">
                   <label class="radio-item"><div class="rdot"></div><span><strong>Personal</strong><span style="display:block;font-size:11px;opacity:.7;">MyScore</span></span></label>
                   <label class="radio-item"><div class="rdot"></div><span><strong>Business</strong><span style="display:block;font-size:11px;opacity:.7;">CreditPro</span></span></label>
                   <label class="radio-item"><div class="rdot"></div><span><strong>Landlords</strong><span style="display:block;font-size:11px;opacity:.7;">RentGuard</span></span></label>
+                  <label class="radio-item"><div class="rdot"></div><span><strong>Others</strong></span></label>
                 </div>
                 <input type="hidden" name="product_type" id="product-type-val">
               </div>
@@ -594,7 +595,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
             <div class="field"><label>Target Audience <span class="req">★</span></label><input type="text" name="target_audience" placeholder="e.g. Women 25–40, interested in skincare" required></div>
             <div class="field"><label>Objective <span class="req">★</span></label><textarea name="objective" rows="3" placeholder="What must this design make the audience do or feel?" required></textarea></div>
             <div class="field">
-              <label>Ads Deliverable Type <span class="req">★</span></label>
+              <label>Ads Deliverable Type</label>
               <div class="radio-grid" id="ads-deliverable" style="grid-template-columns:repeat(3,1fr);">
                 <label class="radio-item"><div class="rdot"></div>Awareness</label>
                 <label class="radio-item"><div class="rdot"></div>Lead Generation</label>
@@ -1054,7 +1055,7 @@ initRadio('imagery-style','imagery-style-val');
   const g = document.getElementById('product-type');
   const h = document.getElementById('product-type-val');
   if (!g) return;
-  const vals = ['Personal — MyScore','Business — CreditPro','Landlords — RentGuard'];
+  const vals = ['Personal — MyScore','Business — CreditPro','Landlords — RentGuard','Others'];
   g.querySelectorAll('.radio-item').forEach((item, idx) => {
     item.addEventListener('click', () => {
       g.querySelectorAll('.radio-item').forEach(i => i.classList.remove('selected'));
@@ -1134,7 +1135,7 @@ function removeDim(btn) {
 
 // PROGRESS
 const REQ_FIELDS = ['project_name','requested_by','target_audience','objective','sample1_url'];
-const REQ_HIDDEN = ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','ads-deliverable-val','company-val'];
+const REQ_HIDDEN = ['design-mood-val','colour-direction-val','imagery-style-val','product-type-val','company-val'];
 function updateProgress() {
   let filled = 0, total = REQ_FIELDS.length + REQ_HIDDEN.length + 2;
   REQ_FIELDS.forEach(n => { const el = document.querySelector('[name="'+n+'"]'); if (el && el.value.trim()) filled++; });
