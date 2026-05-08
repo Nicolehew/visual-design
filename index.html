@@ -629,8 +629,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
             <div class="stitle">Copy & Content</div>
           </div>
           <div class="section-body" id="copy-fields">
-            <div class="field-row"><div class="field"><label>Visual Headline</label><input type="text" name="headline" placeholder="Aim ≤60 chars"></div><div class="field"><label>Ads Headline</label><input type="text" name="ads_headline" placeholder="Short headline"></div></div>
-            <div class="field"><label>Ads Copy</label><textarea name="ads_copy" rows="2" placeholder="Aim ≤100 chars"></textarea></div>
+            <div class="field-row"><div class="field"><label>Visual Headline <span class="req">★</span></label><input type="text" name="headline" placeholder="Aim ≤60 chars"></div><div class="field"><label>Ads Headline <span class="req">★</span></label><input type="text" name="ads_headline" placeholder="Short headline"></div></div>
+            <div class="field"><label>Ads Copy <span class="req">★</span></label><textarea name="ads_copy" rows="2" placeholder="Aim ≤100 chars"></textarea></div>
             <div class="field-row"><div class="field"><label>Primary CTA</label><input type="text" name="cta_primary" placeholder="e.g. Shop Now"></div><div class="field"><label>Destination URL</label><input type="url" name="cta_url" placeholder="https://..."></div></div>
             <div class="field-row"><div class="field"><label>Secondary CTA</label><input type="text" name="cta_secondary" placeholder="e.g. Learn More"></div><div class="field"><label>Secondary URL</label><input type="url" name="cta_secondary_url" placeholder="https://..."></div></div>
             <div class="field"><label>Disclaimers / Hashtags</label><textarea name="disclaimers" rows="2" placeholder="T&C apply | #RayaSale | @brandname"></textarea></div>
@@ -1180,7 +1180,7 @@ function switchTab(tab, btn) {
 }
 
 // SUBMIT
-const LABELS = {project_name:'Project Name',requested_by:'Requested by',company:'Company',target_audience:'Target Audience',objective:'Objective',sample1_url:'Sample 1 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style','product-type-val':'Product Type','ads-deliverable-val':'Ads Deliverable Type'};
+const LABELS = {project_name:'Project Name',requested_by:'Requested by',company:'Company',headline:'Visual Headline',ads_headline:'Ads Headline',ads_copy:'Ads Copy',target_audience:'Target Audience',objective:'Objective',sample1_url:'Sample 1 URL','design-mood-val':'Design Mood','colour-direction-val':'Colour Direction','imagery-style-val':'Imagery Style','product-type-val':'Product Type','ads-deliverable-val':'Ads Deliverable Type'};
 document.getElementById('brief-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const errEl = document.getElementById('error-msg'); errEl.style.display = 'none';
