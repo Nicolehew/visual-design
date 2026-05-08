@@ -220,6 +220,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 .add-dim-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--purple4);border:1.5px dashed var(--purple);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--purple);cursor:pointer;width:fit-content;margin-top:4px;}
 
 .sample-block{background:var(--surface2);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);}
+.sample-tabs{display:flex;gap:6px;margin-bottom:2px;}
+.stab{padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;}
+.stab.active{border-color:var(--purple);background:var(--purple);color:#fff;}
+.upload-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed var(--border2);border-radius:var(--radius);padding:18px 10px;cursor:pointer;text-align:center;font-size:12px;color:var(--text3);transition:all .15s;background:#fff;}
+.upload-zone:hover{border-color:var(--purple);color:var(--purple);background:var(--purple4);}
+.upload-zone img{max-height:80px;border-radius:8px;object-fit:cover;}
 .sample-label{font-size:12.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:7px;}
 .req-badge{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
 .opt-badge{background:var(--purple4);color:var(--purple);font-size:10px;padding:2px 8px;border-radius:20px;}
@@ -655,6 +661,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
                   <label class="radio-item"><div class="rdot"></div>Abstract</label>
                   <label class="radio-item"><div class="rdot"></div>Type-driven</label>
                   <label class="radio-item"><div class="rdot"></div>AI-generated</label>
+                  <label class="radio-item"><div class="rdot"></div>Others</label>
                 </div>
                 <input type="hidden" name="imagery_style" id="imagery-style-val">
               </div>
@@ -684,11 +691,59 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
           <div class="section-body">
             <div class="field">
               <label>Design Samples</label>
-              <span class="hint" style="margin-bottom:8px;">Sample 1 required. 2 &amp; 3 optional.</span>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-                <div class="sample-block"><div class="sample-label">Sample 1 <span class="req-badge">Required</span></div><input type="url" name="sample1_url" placeholder="https://" required><textarea name="sample1_notes" placeholder="What you like about it" rows="2"></textarea></div>
-                <div class="sample-block"><div class="sample-label">Sample 2 <span class="opt-badge">Optional</span></div><input type="url" name="sample2_url" placeholder="https://"><textarea name="sample2_notes" placeholder="What you like about it" rows="2"></textarea></div>
-                <div class="sample-block"><div class="sample-label">Sample 3 <span class="opt-badge">Optional</span></div><input type="url" name="sample3_url" placeholder="https://"><textarea name="sample3_notes" placeholder="What you like about it" rows="2"></textarea></div>
+              <span class="hint" style="margin-bottom:10px;">Sample 1 required. 2 &amp; 3 optional. Paste a URL or upload an image.</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+                <div class="sample-block">
+                  <div class="sample-label">Sample 1 <span class="req-badge">Required</span></div>
+                  <div class="sample-tabs" id="stabs-1">
+                    <button type="button" class="stab active" onclick="switchSampleTab(1,'url',this)">🔗 URL</button>
+                    <button type="button" class="stab" onclick="switchSampleTab(1,'upload',this)">📎 Upload</button>
+                  </div>
+                  <div id="s1-url"><input type="url" name="sample1_url" placeholder="https://"></div>
+                  <div id="s1-upload" style="display:none;">
+                    <label class="upload-zone" for="s1-file">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span id="s1-label">Click to upload or drag image</span>
+                    </label>
+                    <input type="file" id="s1-file" accept="image/*" style="display:none;" onchange="handleUpload(1,this)">
+                    <input type="hidden" name="sample1_upload" id="s1-data">
+                  </div>
+                  <textarea name="sample1_notes" placeholder="What you like about it" rows="2"></textarea>
+                </div>
+                <div class="sample-block">
+                  <div class="sample-label">Sample 2 <span class="opt-badge">Optional</span></div>
+                  <div class="sample-tabs" id="stabs-2">
+                    <button type="button" class="stab active" onclick="switchSampleTab(2,'url',this)">🔗 URL</button>
+                    <button type="button" class="stab" onclick="switchSampleTab(2,'upload',this)">📎 Upload</button>
+                  </div>
+                  <div id="s2-url"><input type="url" name="sample2_url" placeholder="https://"></div>
+                  <div id="s2-upload" style="display:none;">
+                    <label class="upload-zone" for="s2-file">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span id="s2-label">Click to upload or drag image</span>
+                    </label>
+                    <input type="file" id="s2-file" accept="image/*" style="display:none;" onchange="handleUpload(2,this)">
+                    <input type="hidden" name="sample2_upload" id="s2-data">
+                  </div>
+                  <textarea name="sample2_notes" placeholder="What you like about it" rows="2"></textarea>
+                </div>
+                <div class="sample-block">
+                  <div class="sample-label">Sample 3 <span class="opt-badge">Optional</span></div>
+                  <div class="sample-tabs" id="stabs-3">
+                    <button type="button" class="stab active" onclick="switchSampleTab(3,'url',this)">🔗 URL</button>
+                    <button type="button" class="stab" onclick="switchSampleTab(3,'upload',this)">📎 Upload</button>
+                  </div>
+                  <div id="s3-url"><input type="url" name="sample3_url" placeholder="https://"></div>
+                  <div id="s3-upload" style="display:none;">
+                    <label class="upload-zone" for="s3-file">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span id="s3-label">Click to upload or drag image</span>
+                    </label>
+                    <input type="file" id="s3-file" accept="image/*" style="display:none;" onchange="handleUpload(3,this)">
+                    <input type="hidden" name="sample3_upload" id="s3-data">
+                  </div>
+                  <textarea name="sample3_notes" placeholder="What you like about it" rows="2"></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -973,7 +1028,47 @@ function initRadio(groupId, hiddenId) {
 }
 // Pre-select Normal urgency
 document.getElementById('urgency-val').value = 'normal';
-// ── CALENDAR PICKER (2026 only) ──
+// ── SAMPLE URL / UPLOAD TABS ──
+function switchSampleTab(n, mode, btn) {
+  // Toggle tab buttons
+  const tabs = document.querySelectorAll('#stabs-'+n+' .stab');
+  tabs.forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  // Toggle panels
+  document.getElementById('s'+n+'-url').style.display    = mode==='url'    ? 'block' : 'none';
+  document.getElementById('s'+n+'-upload').style.display = mode==='upload' ? 'block' : 'none';
+}
+
+function handleUpload(n, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const label = document.getElementById('s'+n+'-label');
+  const dataEl = document.getElementById('s'+n+'-data');
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = e => {
+    label.innerHTML = '<img src="'+e.target.result+'" style="max-height:80px;border-radius:8px;object-fit:cover;"><br><span style="font-size:11px;">'+file.name+'</span>';
+    if (dataEl) dataEl.value = e.target.result; // store base64
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag & drop support
+[1,2,3].forEach(n => {
+  const zone = document.querySelector('[for="s'+n+'-file"]');
+  if (!zone) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='var(--purple)'; });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor=''; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.style.borderColor='';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const inp = document.getElementById('s'+n+'-file');
+      const dt = new DataTransfer(); dt.items.add(file); inp.files = dt.files;
+      handleUpload(n, inp);
+    }
+  });
+});
 const CAL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CAL_SHORT  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 let calMonth = new Date().getMonth();
