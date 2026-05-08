@@ -193,7 +193,11 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 .chk-box{width:19px;height:19px;border:1.5px solid var(--border2);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .chk-item.done .chk-box{background:var(--success);border-color:var(--success);}
 
-/* STATUS BOARD */
+/* NOTIFICATION BELL */
+#notif-bell:hover{background:var(--surface2);}
+@keyframes bellring{0%,100%{transform:rotate(0);}15%{transform:rotate(15deg);}30%{transform:rotate(-12deg);}45%{transform:rotate(8deg);}60%{transform:rotate(-5deg);}75%{transform:rotate(3deg);}}
+.bell-ring svg{animation:bellring .6s ease;}
+
 .status-board-wrap{max-width:1400px;margin:0 auto;padding:24px 40px 80px;}
 .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
 .kanban-col{background:var(--surface2);border-radius:var(--radius-lg);overflow:hidden;}
@@ -268,9 +272,26 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
 <header>
   <div class="logo">Design<span>Brief</span></div>
   <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2);">
-    <span>Staff Portal</span><span class="badge-req">★ = required</span>
+    <span>Staff Portal</span>
+    <span class="badge-req">★ = required</span>
+    <!-- Notification bell -->
+    <button id="notif-bell" onclick="toggleNotifPanel()" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;color:var(--text2);display:flex;align-items:center;border-radius:8px;transition:background .15s;" title="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span id="notif-badge" style="display:none;position:absolute;top:2px;right:2px;width:16px;height:16px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1;" id="notif-badge">0</span>
+    </button>
   </div>
 </header>
+
+<!-- Notification dropdown panel -->
+<div id="notif-panel" style="display:none;position:fixed;top:58px;right:12px;width:320px;max-height:400px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;overflow:hidden;">
+  <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-size:13.5px;font-weight:600;color:var(--text);">Notifications</span>
+    <button onclick="clearNotifs()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;">Clear all</button>
+  </div>
+  <div id="notif-list" style="overflow-y:auto;max-height:340px;padding:8px 0;">
+    <div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--text3);">No notifications yet</div>
+  </div>
+</div>
 
 <nav class="tab-nav">
   <button class="tab-btn active" id="tab-btn-form" onclick="switchTab('form',this)">
@@ -574,15 +595,89 @@ const CHECK_ITEMS = [
   {key:'files_delivered',label:'Files delivered'}
 ];
 
-// NOTIFICATION BAR
-let notifT;
-function showNotif(msg) {
+// ── NOTIFICATION SYSTEM ──
+let notifLog = []; // stores all notifications
+let unreadCount = 0;
+
+function showNotif(msg, type='info') {
+  // Add to log
+  notifLog.unshift({msg, type, time: new Date()});
+  if (notifLog.length > 50) notifLog = notifLog.slice(0, 50);
+  unreadCount++;
+  
+  // Update bell badge
+  const badge = document.getElementById('notif-badge');
+  if (badge) {
+    badge.style.display = 'flex';
+    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+  }
+
+  // Bell wiggle
+  const bell = document.getElementById('notif-bell');
+  if (bell) { bell.classList.remove('bell-ring'); void bell.offsetWidth; bell.classList.add('bell-ring'); }
+
+  // Top banner (auto-dismiss)
   document.getElementById('notif-text').textContent = msg;
-  document.getElementById('notif-bar').classList.add('show');
+  const bar = document.getElementById('notif-bar');
+  bar.classList.add('show');
   document.body.style.paddingTop = '38px';
   clearTimeout(notifT);
-  notifT = setTimeout(closeNotif, 7000);
+  notifT = setTimeout(closeNotif, 5000);
+
+  // Update panel list
+  renderNotifList();
 }
+
+function renderNotifList() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  if (notifLog.length === 0) {
+    list.innerHTML = '<div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--text3);">No notifications yet</div>';
+    return;
+  }
+  list.innerHTML = notifLog.map(n => {
+    const t = n.time.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'});
+    const d = n.time.toLocaleDateString('en-MY',{month:'short',day:'numeric'});
+    return '<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;">'
+      +'<div style="color:var(--text);margin-bottom:2px;">'+n.msg+'</div>'
+      +'<div style="font-size:11.5px;color:var(--text3);">'+d+' at '+t+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+let notifPanelOpen = false;
+function toggleNotifPanel() {
+  const panel = document.getElementById('notif-panel');
+  notifPanelOpen = !notifPanelOpen;
+  panel.style.display = notifPanelOpen ? 'block' : 'none';
+  if (notifPanelOpen) {
+    // Reset badge when panel opened
+    unreadCount = 0;
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+    renderNotifList();
+  }
+}
+
+function clearNotifs() {
+  notifLog = [];
+  unreadCount = 0;
+  const badge = document.getElementById('notif-badge');
+  if (badge) badge.style.display = 'none';
+  renderNotifList();
+}
+
+// Close panel when clicking outside
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('notif-panel');
+  const bell = document.getElementById('notif-bell');
+  if (notifPanelOpen && panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
+    notifPanelOpen = false;
+    panel.style.display = 'none';
+  }
+});
+
+let notifT;
 function closeNotif() {
   document.getElementById('notif-bar').classList.remove('show');
   document.body.style.paddingTop = '0';
@@ -904,7 +999,7 @@ async function updateStatus(id, status, badgeId) {
     });
     const badge = document.getElementById('sbadge-'+badgeId);
     if (badge) { badge.textContent=st.label; badge.style.background=st.bg; badge.style.color=st.color; }
-    showNotif('\uD83D\uDCE2 Status updated: '+st.label);
+    showNotif('📢 Status updated to: '+st.label);
   } catch(err) { console.warn('Status update failed:',err); }
 }
 
@@ -1023,14 +1118,41 @@ async function moveCard(id, newStatus, event) {
 
 async function trashCard(id, event) {
   event.stopPropagation();
-  if (!confirm('Move this brief to Trash?')) return;
-  try {
-    await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
-      method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'}, body:JSON.stringify({status:'trash'})
-    });
-    showNotif('\uD83D\uDDD1 Moved to Trash Bin');
-    loadStatusBoard(); loadTrash();
-  } catch(err) { console.warn('Trash failed:',err); }
+  // Show inline confirm on the button
+  const btn = event.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.confirming === 'true') {
+    // Second click — confirmed
+    btn.dataset.confirming = '';
+    btn.textContent = '🗑 Trashing…';
+    btn.style.opacity = '.6';
+    try {
+      await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
+        method:'PATCH', headers:{...SBH,'Prefer':'return=minimal'}, body:JSON.stringify({status:'trash'})
+      });
+      showNotif('🗑 Moved to Trash Bin');
+      loadStatusBoard(); loadTrash();
+      // Update trash count
+      const ct = document.getElementById('count-trash');
+      if (ct) ct.textContent = (parseInt(ct.textContent||'0')+1).toString();
+    } catch(err) { console.warn('Trash failed:',err); }
+  } else {
+    // First click — ask for confirm
+    btn.dataset.confirming = 'true';
+    const orig = btn.innerHTML;
+    btn.innerHTML = '⚠ Confirm trash?';
+    btn.style.background = '#FDECEA';
+    btn.style.color = '#C0392B';
+    // Reset after 3s if no second click
+    setTimeout(() => {
+      if (btn.dataset.confirming === 'true') {
+        btn.dataset.confirming = '';
+        btn.innerHTML = orig;
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    }, 3000);
+  }
 }
 
 // MONTHLY TAB — auto-detects month from submitted_at, shows folder per month
@@ -1243,14 +1365,31 @@ async function restoreFromTrash(id, event) {
 }
 async function deleteForever(id, event) {
   event.stopPropagation();
-  if (!confirm('Permanently delete this brief? This cannot be undone.')) return;
-  try {
-    await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
-      method:'DELETE', headers:SBH
-    });
-    showNotif('\uD83D\uDDD1 Brief permanently deleted');
-    loadTrash();
-  } catch(err) { console.warn('Delete failed:',err); }
+  const btn = event.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.confirming === 'true') {
+    btn.dataset.confirming = '';
+    btn.textContent = 'Deleting…';
+    try {
+      await fetch(SB_URL+'/rest/v1/design_brief_submissions?id=eq.'+id, {
+        method:'DELETE', headers:SBH
+      });
+      showNotif('🗑 Brief permanently deleted');
+      loadTrash();
+    } catch(err) { console.warn('Delete failed:',err); }
+  } else {
+    btn.dataset.confirming = 'true';
+    const orig = btn.innerHTML;
+    btn.innerHTML = '⚠ Are you sure? Click again';
+    btn.style.background = '#FDECEA';
+    setTimeout(() => {
+      if (btn.dataset.confirming === 'true') {
+        btn.dataset.confirming = '';
+        btn.innerHTML = orig;
+        btn.style.background = '';
+      }
+    }, 3000);
+  }
 }
 
 // RESET FORM
