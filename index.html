@@ -856,7 +856,13 @@ textarea{resize:vertical;min-height:72px;line-height:1.6;}
   </div><!-- end main-area -->
 </div><!-- end app-layout -->
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+// ── EMAILJS CONFIG — replace with your actual IDs ──
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+emailjs.init(EMAILJS_PUBLIC_KEY);
 // ── SIDEBAR HELPERS ──
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
@@ -1399,7 +1405,7 @@ document.getElementById('brief-form').addEventListener('submit', async function(
   try {
     const res = await fetch(SB_URL+'/rest/v1/design_brief_submissions', {method:'POST',headers:{...SBH,'Prefer':'return=minimal'},body:JSON.stringify(payload)});
     if (!res.ok) console.warn('SB error:', res.status, await res.text());
-    else { lastCount++; showNotif('\u2705 Brief submitted: '+payload.project_name); }
+    else { lastCount++; showNotif('\u2705 Brief submitted: '+payload.project_name); sendEmailNotification(payload); }
   } catch(err) { console.warn('Submit failed:',err); }
   document.getElementById('brief-form').style.display = 'none';
   document.getElementById('success-screen').style.display = 'flex';
@@ -1412,6 +1418,28 @@ document.getElementById('brief-form').addEventListener('submit', async function(
     +'<div style="border-top:1px solid var(--border);padding-top:8px;font-size:12px;color:var(--text3);">'+when+'</div></div>';
   document.getElementById('success-screen').scrollIntoView({behavior:'smooth',block:'start'});
 });
+
+// ── EMAIL NOTIFICATION ──
+async function sendEmailNotification(payload) {
+  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return; // not configured yet
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:        'nicolehwy@sunway.com.my, tanyuh@sunway.com.my',
+      project_name:    payload.project_name || '',
+      requested_by:    payload.requested_by || '',
+      company:         payload.company || '',
+      product_type:    payload.product_type || '',
+      deliverable_types: payload.deliverable_types || '',
+      due_date:        payload.due_date || 'Not specified',
+      requested_date:  payload.month_year || '',
+      urgency:         payload.urgency || 'Normal',
+      portal_link:     'https://visual-design-delta.vercel.app'
+    });
+    console.log('Email notification sent');
+  } catch(err) {
+    console.warn('Email failed:', err);
+  }
+}
 
 // FETCH — exclude trash and archived from active views
 async function fetchBriefs(filter) {
